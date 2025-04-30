@@ -35,7 +35,7 @@
                         size="small" />
                 </el-col>
                 <el-col :span="8">
-                    <el-image :src="vCodePic" :fit="fit"></el-image>
+                    <el-image :src="vCodePic" :fit="fit" @click="loadVCode()"></el-image>
                 </el-col>
 
             </el-form-item>
@@ -52,22 +52,23 @@
 </template>
 
 <script>
-import axios from "axios";
+import service from '@/utils/request';
+//import axios from "axios";
 export default {
     data() {
         return {
             registerForm: {
-                id : 0,
+                id: 0,
                 username: "",
                 password: "",
                 name: "",
                 email: "",
                 vCode: ""
             },
-            vCodePic: require("../assets/vCodePic.png"),
+            // vCodePic: require("../assets/vCodePic.png"),
 
-            flag : 0,//判断注册是否成功，默认失败(0)
-
+            flag: 0,//判断注册是否成功，默认失败(0)
+            uuid: "",
             /////////////////////////////////////
             rules: {
                 username: [{ validator: this.checkUsername, trigger: "blur" }],
@@ -78,22 +79,59 @@ export default {
             },
         };
     },
+    mounted() {
+        const token = localStorage.getItem('token');
+        if (token) {
+            service.defaults.headers.common['token'] = token;
+            this.getUuid(); // 加载验证码
+        }
+       
+    },
     methods: {
+        getUuid() {
+            service.get("/login/uuid").then((result) => {
+                if (result.data.code == 1) {
+                    this.uuid = result.data.data;
+                    this.loadVCode();
+                }
+            })
+        },
+        
+        loadVCode() {
+            service.get('/vCode', {
+                params: { length: 4 }, // 如果需要传递参数
+                responseType: 'blob', // 设置响应类型为 blob，用于接收图片
+                headers: {
+                    "Uuid": this.uuid,
+                }
+            })
+                .then(response => {
+                    // 将 blob 数据转换为 URL 并赋值给 vCodePic
+                    this.vCodePic = URL.createObjectURL(new Blob([response.data], { type: response.headers['content-type'] }));
+                })
+                .catch(error => {
+                    console.error('获取验证码失败：', error);
+                });
+        },
         goRegister() {
             this.$refs.registerForm.validate((valid) => {
                 if (valid) {
-                    axios
-                        .post("http://127.0.0.1:4523/m1/6023266-5712566-default/login/register", this.registerForm)
+                    service
+                        .post("/login/register", this.registerForm, {
+                            headers: {
+                                "Uuid": this.uuid,
+                            }
+                        })
                         .then((result) => {
-                            this.flag=result.data.code
-                            if(this.flag==1){
+                            this.flag = result.data.code
+                            if (this.flag == 1) {
                                 alert("注册成功")
                                 this.$router.push("login");
                             }
-                            else{
+                            else {
                                 alert("注册失败")
                             }
-                            
+
                         });
                 } else {
                     alert("注册失败");

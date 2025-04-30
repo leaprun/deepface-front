@@ -44,6 +44,11 @@
                     <el-table-column prop="id" label="课程id">
                     </el-table-column>
                     <el-table-column prop="name" label="课程名称">
+                        <template slot-scope="scope">
+                            <a @click="goToCourseStudent(scope.row.id,scope.row.name)">
+                                {{ scope.row.name }}
+                            </a>
+                        </template>
                     </el-table-column>
                     <el-table-column prop="startTime" label="开始时间">
                     </el-table-column>
@@ -69,13 +74,13 @@
         <!-- 修改课程的dialog -->
         <el-dialog title="修改课程" :visible.sync="dialogFormVisible">
             <el-form :model="courseData">
-                <el-form-item label="课程名称" >
+                <el-form-item label="课程名称">
                     <el-input v-model="courseData.name" autocomplete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="开始时间" >
+                <el-form-item label="开始时间">
                     <el-input v-model="courseData.startTime" autocomplete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="结束时间" >
+                <el-form-item label="结束时间">
                     <el-input v-model="courseData.endTime" autocomplete="off"></el-input>
                 </el-form-item>
 
@@ -111,7 +116,8 @@
 </template>
 
 <script>
-import axios from 'axios';
+//import axios from 'axios';
+import service from '@/utils/request';
 
 export default {
     data() {
@@ -123,21 +129,28 @@ export default {
             total: 0,//课程总数
             pageSize: 3,//分页大小
             start: 1,//当前页面
+
         };
     },
-    
+
     mounted() {
+
         console.log("Classes 组件已加载");
-        this.loadTableData();
-        axios.defaults.headers.common["token"] = localStorage.getItem('token')
+        // 获取本地存储中的 token 并设置为默认请求头
+        const token = localStorage.getItem('token');
+        if (token) {
+            service.defaults.headers.common['token'] = token;
+            this.loadTableData();
+        }
+        //service.defaults.headers.common["token"] = localStorage.getItem('token')
     },
     methods: {
         loadTableData() {
-            axios.get("http://127.0.0.1:4523/m1/6023266-5712566-default/classes",
+            service.get("/classes",
                 {
-                    headers: {
-                        "token": localStorage.getItem("token")
-                    },
+                    // headers: {
+                    //     "Token": localStorage.getItem("token")
+                    // },
                     params: {
                         start: this.start,
                         pageSize: this.pageSize
@@ -152,6 +165,11 @@ export default {
                     this.$message.error("网络请求失败，请检查网络连接或联系管理员");
                 });
         },
+        goToCourseStudent(id,name){
+            localStorage.setItem('classesId',id);
+            localStorage.setItem('classesName',name);
+            this.$router.push("student");//路由到对应班级的学生管理页面
+        },
         handleCurrentChange(page) {
             this.start = page;
             this.loadTableData();
@@ -161,7 +179,7 @@ export default {
             this.courseData = row
         },
         submitChange() {
-            axios.put("http://127.0.0.1:4523/m1/6023266-5712566-default/classes", this.courseData, {
+            service.put("/classes", this.courseData, {
                 headers: {
                     "token": localStorage.getItem("token")
                 }
@@ -169,6 +187,7 @@ export default {
                 .then((result) => {
                     if (result.data.code == 1) {
                         alert("修改成功")
+                        this.dialogFormVisible = false;
                     } else {
                         alert("修改失败")
                     }
@@ -176,7 +195,7 @@ export default {
             this.dialogFormVisible = false
         },
         deleteCourse(id) {
-            axios.delete("http://127.0.0.1:4523/m1/6023266-5712566-default/classes/" + id, {
+            service.delete("/classes/" + id, {
                 headers: {
                     "token": localStorage.getItem("token")
                 }
@@ -194,7 +213,7 @@ export default {
             this.dialogFormVisible2 = true;
         },
         submitAdd() {
-            axios.post("http://127.0.0.1:4523/m1/6023266-5712566-default/classes", this.courseData, {
+            service.post("/classes", this.courseData, {
                 headers: {
                     "token": localStorage.getItem("token")
                 }
@@ -202,6 +221,7 @@ export default {
                 .then((result) => {
                     if (result.data.code == 1) {
                         alert("增加成功")
+                        this.dialogFormVisible2 = false;
                     } else {
                         alert("增加失败")
                     }

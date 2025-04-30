@@ -49,8 +49,8 @@
                     </el-col>
                     <el-col :span="6">
                         <el-upload class="upload-demo"
-                            action="http://127.0.0.1:4523/m1/6023266-5712566-default/student/addBatch"
-                            :on-success="handleSuccess" :on-error="handleError" :on-preview="handlePreview"
+                            action="http://10.243.140.27:8000/student/addBatch"
+                            :on-success="handleSuccess" :on-error="handleError" :on-preview="handlePreview"  :headers="uploadHeaders"
                             :on-remove="handleRemove" :before-remove="beforeRemove" :limit="1" :on-exceed="handleExceed"
                             :file-list="fileList" accept=".pdf">
                             <el-button size="small" type="primary">批量上传学生信息</el-button>
@@ -67,12 +67,12 @@
                     <el-row :gutter="20">
                         <el-col :span="6">
                             <el-form-item label="课程id">
-                                <el-input v-model="searchData.classesId"></el-input>
+                                <el-input v-model="searchData.classesId"  :disabled="true"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="6">
-                            <el-form-item label="课程名称">
-                                <el-input v-model="searchData.classesName"></el-input>
+                            <el-form-item label="课程名称"  >
+                                <el-input v-model="searchData.classesName" :disabled="true"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="6">
@@ -116,7 +116,7 @@
         <el-dialog title="修改学生信息" :visible.sync="dialogFormVisible">
             <el-form :model="studentData">
                 <el-form-item label="学生id">
-                    <el-input v-model="studentData.studentId" autocomplete="off"></el-input>
+                    <el-input v-model="studentData.studentId" autocomplete="off" :disabled="true"></el-input>
                 </el-form-item>
                 <el-form-item label="学生姓名">
                     <el-input v-model="studentData.studentName" autocomplete="off"></el-input>
@@ -135,6 +135,12 @@
         <!-- 增加课程的dialog -->
         <el-dialog title="新增学生" :visible.sync="dialogFormVisible2">
             <el-form :model="studentData">
+                <el-form-item label="课程id">
+                    <el-input v-model="studentData.classesId" autocomplete="off" :disabled="true"></el-input>
+                </el-form-item>
+                <el-form-item label="课程名称">
+                    <el-input v-model="studentData.classesName" autocomplete="off" :disabled="true"></el-input>
+                </el-form-item>
                 <el-form-item label="学生id">
                     <el-input v-model="studentData.studentId" autocomplete="off"></el-input>
                 </el-form-item>
@@ -155,36 +161,50 @@
 </template>
 
 <script>
-import axios from 'axios';
+import service from '@/utils/request';
+//import axios from 'axios';
 export default {
     data() {
         return {
             tableData: [],//当前分页学生的数据
             dialogFormVisible: false,//修改学生的对话框显示
             dialogFormVisible2: false,
-            studentData: {},   //单个学生的数据
+            studentData: {
+                classesId: localStorage.getItem('classesId'),
+                classesName: localStorage.getItem('classesName'),
+                studentId: "",
+                studentName: "",
+                studentEmail:"",
+            },   //单个学生的数据
             total: 0,//学生总数
             searchData: {
-                pageSize: 3,//分页大小
+                pageSize: 5,//分页大小
                 start: 1,//当前页面
                 studentId: "",
                 studentName: "",
-                classesId: "",
-                classesName: ""
+                classesId: localStorage.getItem('classesId'),
+                classesName: localStorage.getItem('classesName'),
             },
-            fileList: []
+            fileList: [],
+            uploadHeaders: {}, // 上传的请求头
 
         };
     },
 
     mounted() {
         console.log("student 组件已加载");
-        this.loadTableData();
-        axios.defaults.headers.common["token"] = localStorage.getItem('token')
+        // 获取本地存储中的 token 并设置为默认请求头
+        const token = localStorage.getItem('token');
+        if (token) {
+            service.defaults.headers.common['token'] = token;
+            this.uploadHeaders = { token };
+            this.loadTableData();
+        }
+        //axios.defaults.headers.common["token"] = localStorage.getItem('token')
     },
     methods: {
         loadTableData() {
-            axios.get("http://127.0.0.1:4523/m1/6023266-5712566-default/student",
+            service.get("/student",
                 {
                     headers: {
                         "token": localStorage.getItem("token")
@@ -193,7 +213,7 @@ export default {
                 }
             )
                 .then((result) => {
-                    this.tableData = result.data.data.students;
+                    this.tableData = result.data.data.rows;
                     this.total = result.data.data.total;
                 }).catch((error) => {
                     console.error("网络请求失败：", error);
@@ -202,7 +222,7 @@ export default {
         },
         searchStudent() {
             this.searchData.start = 1;
-            alert(JSON.stringify(this.searchData));
+            // alert(JSON.stringify(this.searchData));
             this.tableData = [];
             this.loadTableData();
             //location.reload();
@@ -216,7 +236,7 @@ export default {
             this.studentData = row
         },
         submitChange() {
-            axios.put("http://127.0.0.1:4523/m1/6023266-5712566-default/student", this.studentData, {
+            service.put("/student", this.studentData, {
                 headers: {
                     "token": localStorage.getItem("token")
                 }
@@ -231,7 +251,7 @@ export default {
             this.dialogFormVisible = false
         },
         deleteStudent(id) {
-            axios.delete("http://127.0.0.1:4523/m1/6023266-5712566-default/student/" + id, {
+            service.delete("/student/" + id +"&"+ localStorage.getItem('classesId'), {
                 headers: {
                     "token": localStorage.getItem("token")
                 }
@@ -250,7 +270,7 @@ export default {
             this.dialogFormVisible2 = true;
         },
         submitAdd() {
-            axios.post("http://127.0.0.1:4523/m1/6023266-5712566-default/student/add", this.studentData, {
+            service.post("/student/add", this.studentData, {
                 headers: {
                     "token": localStorage.getItem("token")
                 }

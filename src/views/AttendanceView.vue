@@ -1,3 +1,4 @@
+<!-- 签到页面 -->
 <template>
     <el-container style="height: 100vh; border: 1px solid #eee">
         <el-aside width="200px" style="background-color: rgb(238, 241, 246); height: 100%">
@@ -26,17 +27,6 @@
         </el-aside>
 
         <el-container>
-            <!-- <el-header style="text-align: right; font-size: 12px; height: 60px;">
-                <el-dropdown>
-                    <i class="el-icon-setting" style="margin-right: 15px"></i>
-                    <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item>查看</el-dropdown-item>
-                        <el-dropdown-item>新增</el-dropdown-item>
-                        <el-dropdown-item>删除</el-dropdown-item>
-                    </el-dropdown-menu>
-                </el-dropdown>
-                <span>王小虎</span>
-            </el-header> -->
 
             <el-main style="height: calc(100vh - 60px)">
                 <el-table :data="tableData" height="600px">
@@ -88,8 +78,8 @@
 </template>
 
 <script>
-import axios from 'axios';
-
+// import axios from 'axios';
+import service from '@/utils/request';
 export default {
     data() {
         return {
@@ -102,17 +92,22 @@ export default {
             dialogCheckInfoVisible: false,
             // showSuccessResult: false,//展示考勤成功
             // showErrorResult: false,//展示考勤失败
+            isBegin: true,
         };
     },
 
     mounted() {
         console.log("Classes 组件已加载");
-        this.loadTableData();
-        axios.defaults.headers.common["token"] = localStorage.getItem('token')
+        const token = localStorage.getItem('token');
+        if (token) {
+            service.defaults.headers.common['token'] = token;
+            this.loadTableData();
+        }
+        
     },
     methods: {
         loadTableData() {
-            axios.get("http://127.0.0.1:4523/m1/6023266-5712566-default/classes",
+            service.get("/classes",
                 {
                     headers: {
                         "token": localStorage.getItem("token")
@@ -128,7 +123,7 @@ export default {
                     this.tableData = result.data.data.rows.map(item => {
                         return {
                             ...item, // 保留原始数据
-                            isBegin: true //true是开始考勤，false是结束考勤
+                            isBegin:true,
                         };
                     });
                     this.total = result.data.data.total;
@@ -145,8 +140,8 @@ export default {
             // 找到对应行并切换 isBegin 状态
             const row = this.tableData.find(item => item.id === id);
             //开始考勤
-            if (this.isBegin == true) {
-                axios.get("http://127.0.0.1:4523/m1/6023266-5712566-default/check/begin/" + id)
+            if (row.isBegin == true) {
+                service.get("/check/begin/" + id)
                     .then((result) => {
                         if (result.data.code == 1) {
                             this.$message({
@@ -164,7 +159,7 @@ export default {
             }
             //结束考勤
             else {
-                axios.get("http://127.0.0.1:4523/m1/6023266-5712566-default/check/stop/" + id)
+                service.get("/check/stop/" + id)
                     .then((result) => {
                         if (result.data.code == 1) {
                             this.$message({
@@ -180,11 +175,10 @@ export default {
                         }
                     })
             }
-
         },
         checkInfo(id) {
             this.dialogCheckInfoVisible = true;
-            axios.get("http://127.0.0.1:4523/m1/6023266-5712566-default/check/getInfo", {
+            service.get("/check/getInfo", {
                 params: {
                     classesId: id
                 }
@@ -203,7 +197,7 @@ export default {
             // 找到对应行并切换 isBegin 状态
             const row = this.checkData.find(item => item.studentId === studentId);
             row.status = !row.status;
-            axios.get("http://127.0.0.1:4523/m1/6023266-5712566-default/check/update", {
+            service.get("/check/update", {
                 params: {
                     classesId: row.classesId,
                     studentId: row.studentId,
