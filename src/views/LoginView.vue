@@ -137,6 +137,7 @@ export default {
             service.get("/login/uuid").then((result) => {
                 if (result.data.code == 1) {
                     this.uuid = result.data.data;
+                    localStorage.setItem('Uuid',this.uuid);
                     this.loadVCode();
                 }else{
                     alert(result.data.msg)
@@ -149,7 +150,7 @@ export default {
                 responseType: 'blob',// 设置响应类型为 blob，用于接收图片
                 //withCredentials: true // 允许携带 Cookie
                 headers: {
-                    "Uuid": this.uuid,
+                    "Uuid": localStorage.getItem('Uuid'),
                 }
             })
                 .then(response => {
@@ -167,7 +168,7 @@ export default {
                     username: this.resetPswForm.username
                 },
                 headers: {
-                    "Uuid": this.uuid,
+                    "Uuid": localStorage.getItem('Uuid'),
                 }
             }).then((result) => {
                 if (result.data.code == 0) {
@@ -222,7 +223,7 @@ export default {
                         .get("/login/login", {
                             params: this.loginForm,
                             headers: {
-                                "Uuid": this.uuid,
+                                "Uuid": localStorage.getItem('Uuid'),
                             }
                             //withCredentials: true // 允许携带 Cookie
                         })
@@ -246,12 +247,8 @@ export default {
             this.$refs.resetPswForm.validate((valid) => {//合法判断
                 if (valid) {
                     service
-                        .put("/login/resetPsw",{
-                            params: this.resetPswForm,
-                            headers: {
-                                "Uuid": this.uuid,
-                            }
-                        })
+                        .put("/login/resetPsw?username="+this.resetPswForm.username+
+                        "&password="+this.resetPswForm.password+"&vCodeMail="+this.resetPswForm.vCodeMail)
                         .then((result) => {
                             this.flag = result.data.code; //修改密码是否成功
                             if (this.flag == 1) {

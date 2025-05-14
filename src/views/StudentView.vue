@@ -47,16 +47,16 @@
                     <el-col :span="6">
                         <el-button type="primary" icon="el-icon-search" @click="searchStudent">搜索</el-button>
                     </el-col>
-                    <el-col :span="6">
+                    <!-- <el-col :span="6">
                         <el-upload class="upload-demo"
-                            action="http://localhost:8000/student/addBatch"
+                            action="http://10.243.140.27:8000/student/addBatch"
                             :on-success="handleSuccess" :on-error="handleError" :on-preview="handlePreview"  :headers="uploadHeaders"
                             :on-remove="handleRemove" :before-remove="beforeRemove" :limit="1" :on-exceed="handleExceed"
                             :file-list="fileList" accept=".pdf">
                             <el-button size="small" type="primary">批量上传学生信息</el-button>
                             <div slot="tip" class="el-upload__tip">只能上传 PDF 文件</div>
                         </el-upload>
-                    </el-col>
+                    </el-col> -->
                     <!-- 批量上传学生信息 -->
 
                 </el-row>

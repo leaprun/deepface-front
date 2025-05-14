@@ -39,7 +39,18 @@
             </el-header> -->
 
             <el-main style="height: calc(100vh - 60px)">
-                <el-button type="primary" icon="el-icon-plus" @click="addCourse">新增课程</el-button>
+                <el-button type="primary" icon="el-icon-plus" @click="addCourse">新增空课程</el-button>
+                <el-col :span="6">
+                        <el-upload class="upload-demo"
+                            action="http://10.243.140.27:8000/student/addBatch"
+                            :on-success="handleSuccess" :on-error="handleError" :on-preview="handlePreview"  :headers="uploadHeaders"
+                            :on-remove="handleRemove" :before-remove="beforeRemove" :limit="1" :on-exceed="handleExceed"
+                            :file-list="fileList" accept=".pdf">
+                            <el-button size="small" type="primary">批量上传学生信息</el-button>
+                            <div slot="tip" class="el-upload__tip">只能上传 PDF 文件</div>
+                        </el-upload>
+                    </el-col>
+                    <!-- 批量上传学生信息 -->
                 <el-table :data="tableData" height="600px">
                     <el-table-column prop="id" label="课程id">
                     </el-table-column>
@@ -48,8 +59,8 @@
                             <!-- <a  @click="goToCourseStudent(scope.row.id,scope.row.name)">
                                 {{ scope.row.name }}
                             </a> -->
-                            <el-button type="success"
-                                @click="goToCourseStudent(scope.row.id, scope.row.name)">{{ scope.row.name }}</el-button>
+                            <el-button type="success" @click="goToCourseStudent(scope.row.id, scope.row.name)">{{
+                                scope.row.name }}</el-button>
                         </template>
                     </el-table-column>
                     <el-table-column prop="startTime" label="开始时间">
@@ -80,10 +91,12 @@
                     <el-input v-model="courseData.name" autocomplete="off"></el-input>
                 </el-form-item>
                 <el-form-item label="开始时间">
-                    <el-input v-model="courseData.startTime" autocomplete="off"></el-input>
+                    <el-date-picker v-model="courseData.startTime" type="date"
+                        placeholder="选择日期时间"></el-date-picker>
                 </el-form-item>
                 <el-form-item label="结束时间">
-                    <el-input v-model="courseData.endTime" autocomplete="off"></el-input>
+                    <el-date-picker v-model="courseData.endTime" type="date"
+                        placeholder="选择日期时间"></el-date-picker>
                 </el-form-item>
 
             </el-form>
@@ -100,10 +113,12 @@
                     <el-input v-model="courseData.name" autocomplete="off"></el-input>
                 </el-form-item>
                 <el-form-item label="开始时间">
-                    <el-input v-model="courseData.startTime" autocomplete="off"></el-input>
+                    <el-date-picker v-model="courseData.startTime" type="date"
+                        placeholder="选择日期时间"></el-date-picker>
                 </el-form-item>
                 <el-form-item label="结束时间">
-                    <el-input v-model="courseData.endTime" autocomplete="off"></el-input>
+                    <el-date-picker v-model="courseData.endTime" type="date"
+                        placeholder="选择日期时间"></el-date-picker>
                 </el-form-item>
 
             </el-form>
@@ -132,6 +147,7 @@ export default {
             pageSize: 3,//分页大小
             start: 1,//当前页面
 
+            uploadHeaders: {}, // 上传的请求头
         };
     },
 
@@ -142,6 +158,7 @@ export default {
         const token = localStorage.getItem('token');
         if (token) {
             service.defaults.headers.common['token'] = token;
+            this.uploadHeaders = { token };
             this.loadTableData();
         }
         //service.defaults.headers.common["token"] = localStorage.getItem('token')
@@ -191,7 +208,7 @@ export default {
                         alert("修改成功")
                         this.dialogFormVisible = false;
                     } else {
-                        alert("修改失败"+result.data.msg)
+                        alert("修改失败" + result.data.msg)
                     }
                 })
             this.dialogFormVisible = false
@@ -207,7 +224,7 @@ export default {
                         alert("删除成功")
                     }
                     else {
-                        alert("删除失败"+result.data.msg)
+                        alert("删除失败" + result.data.msg)
                     }
                 })
         },
@@ -225,7 +242,7 @@ export default {
                         alert("增加成功")
                         this.dialogFormVisible2 = false;
                     } else {
-                        alert("增加失败"+result.data.msg)
+                        alert("增加失败" + result.data.msg)
                     }
                 })
         }
