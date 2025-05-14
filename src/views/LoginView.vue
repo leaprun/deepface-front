@@ -138,6 +138,8 @@ export default {
                 if (result.data.code == 1) {
                     this.uuid = result.data.data;
                     this.loadVCode();
+                }else{
+                    alert(result.data.msg)
                 }
             })
         },
@@ -170,6 +172,8 @@ export default {
             }).then((result) => {
                 if (result.data.code == 0) {
                     alert("获取邮箱验证码失败");
+                }else{
+                    alert(result.data.msg)
                 }
 
             });
@@ -229,7 +233,7 @@ export default {
                                 this.$router.push("classes");//路由到默认的班级管理界面
 
                             } else {
-                                alert("登录失败");
+                                alert("登录失败"+result.data.msg);
                             }
                             this.flag = 0;
                         });
@@ -254,7 +258,7 @@ export default {
                                 alert(this.flag)
                                 this.dialogFormVisible = false;//重新回到登录界面
                             } else {
-                                alert("修改密码失败");
+                                alert("修改密码失败"+result.data.msg);
                             }
                             this.flag = 0;
                         });

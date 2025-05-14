@@ -9,12 +9,12 @@
                     </router-link>
                 </el-submenu>
 
-                <el-submenu index="2">
+                <!-- <el-submenu index="2">
                     <template slot="title"><i class="el-icon-user-solid"></i>学生管理</template>
                     <router-link to="student">
                         <el-menu-item index="2-1">学生管理</el-menu-item>
                     </router-link>
-                </el-submenu>
+                </el-submenu> -->
 
                 <el-submenu index="3">
                     <template slot="title"><i class="el-icon-s-grid"></i>考勤签到</template>
@@ -45,9 +45,11 @@
                     </el-table-column>
                     <el-table-column prop="name" label="课程名称">
                         <template slot-scope="scope">
-                            <a @click="goToCourseStudent(scope.row.id,scope.row.name)">
+                            <!-- <a  @click="goToCourseStudent(scope.row.id,scope.row.name)">
                                 {{ scope.row.name }}
-                            </a>
+                            </a> -->
+                            <el-button type="success"
+                                @click="goToCourseStudent(scope.row.id, scope.row.name)">{{ scope.row.name }}</el-button>
                         </template>
                     </el-table-column>
                     <el-table-column prop="startTime" label="开始时间">
@@ -165,9 +167,9 @@ export default {
                     this.$message.error("网络请求失败，请检查网络连接或联系管理员");
                 });
         },
-        goToCourseStudent(id,name){
-            localStorage.setItem('classesId',id);
-            localStorage.setItem('classesName',name);
+        goToCourseStudent(id, name) {
+            localStorage.setItem('classesId', id);
+            localStorage.setItem('classesName', name);
             this.$router.push("student");//路由到对应班级的学生管理页面
         },
         handleCurrentChange(page) {
@@ -189,7 +191,7 @@ export default {
                         alert("修改成功")
                         this.dialogFormVisible = false;
                     } else {
-                        alert("修改失败")
+                        alert("修改失败"+result.data.msg)
                     }
                 })
             this.dialogFormVisible = false
@@ -205,7 +207,7 @@ export default {
                         alert("删除成功")
                     }
                     else {
-                        alert("删除失败")
+                        alert("删除失败"+result.data.msg)
                     }
                 })
         },
@@ -223,7 +225,7 @@ export default {
                         alert("增加成功")
                         this.dialogFormVisible2 = false;
                     } else {
-                        alert("增加失败")
+                        alert("增加失败"+result.data.msg)
                     }
                 })
         }

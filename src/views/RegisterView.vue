@@ -93,6 +93,8 @@ export default {
                 if (result.data.code == 1) {
                     this.uuid = result.data.data;
                     this.loadVCode();
+                }else{
+                    alert(result.data.msg)
                 }
             })
         },
@@ -129,7 +131,7 @@ export default {
                                 this.$router.push("login");
                             }
                             else {
-                                alert("注册失败")
+                                alert("注册失败"+result.data.msg)
                             }
 
                         });

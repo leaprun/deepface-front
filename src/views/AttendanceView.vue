@@ -10,12 +10,12 @@
                     </router-link>
                 </el-submenu>
 
-                <el-submenu index="2">
+                <!-- <el-submenu index="2">
                     <template slot="title"><i class="el-icon-user-solid"></i>学生管理</template>
                     <router-link to="student">
                         <el-menu-item index="2-1">学生管理</el-menu-item>
                     </router-link>
-                </el-submenu>
+                </el-submenu> -->
 
                 <el-submenu index="3">
                     <template slot="title"><i class="el-icon-s-grid"></i>考勤签到</template>
@@ -186,7 +186,7 @@ export default {
                 if (result.data.code == 1) {
                     this.checkData = result.data.data.check_in;
                 } else {
-                    alert("获取考勤结果失败")
+                    alert(result.data.msg)
                 }
             }).catch((error) => {
                 console.error("网络请求失败：", error);
@@ -210,7 +210,7 @@ export default {
                         type: 'success'
                     });
                 } else {
-                    alert("修改考勤结果失败" + result.data.code)
+                    alert("修改考勤结果失败" + result.data.msg)
                 }
             }).catch((error) => {
                 console.error("网络请求失败：", error);

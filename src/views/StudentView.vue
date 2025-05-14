@@ -9,12 +9,12 @@
                     </router-link>
                 </el-submenu>
 
-                <el-submenu index="2">
+                <!-- <el-submenu index="2">
                     <template slot="title"><i class="el-icon-user-solid"></i>学生管理</template>
                     <router-link to="student">
                         <el-menu-item index="2-1">学生管理</el-menu-item>
                     </router-link>
-                </el-submenu>
+                </el-submenu> -->
 
                 <el-submenu index="3">
                     <template slot="title"><i class="el-icon-s-grid"></i>考勤签到</template>
@@ -49,7 +49,7 @@
                     </el-col>
                     <el-col :span="6">
                         <el-upload class="upload-demo"
-                            action="http://10.243.140.27:8000/student/addBatch"
+                            action="http://localhost:8000/student/addBatch"
                             :on-success="handleSuccess" :on-error="handleError" :on-preview="handlePreview"  :headers="uploadHeaders"
                             :on-remove="handleRemove" :before-remove="beforeRemove" :limit="1" :on-exceed="handleExceed"
                             :file-list="fileList" accept=".pdf">
@@ -245,7 +245,7 @@ export default {
                     if (result.data.code == 1) {
                         alert("修改成功")
                     } else {
-                        alert("修改失败")
+                        alert("修改失败"+result.data.msg)
                     }
                 })
             this.dialogFormVisible = false
@@ -262,7 +262,7 @@ export default {
                         location.reload();
                     }
                     else {
-                        alert("删除失败")
+                        alert("删除失败" + result.data.msg)
                     }
                 })
         },
@@ -279,7 +279,7 @@ export default {
                     if (result.data.code == 1) {
                         alert("增加成功")
                     } else {
-                        alert("增加失败")
+                        alert("增加失败"+ result.data.msg)
                     }
                 })
         },
