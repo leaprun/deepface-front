@@ -4,7 +4,7 @@
             <el-menu :default-openeds="['1', '3']">
                 <el-submenu index="1">
                     <template slot="title"><i class="el-icon-menu"></i>班级管理</template>
-                    <router-link to="classes">
+                    <router-link tag="div" to="classes">
                         <el-menu-item index="1-1">我的班级</el-menu-item>
                     </router-link>
                 </el-submenu>
@@ -18,7 +18,7 @@
 
                 <el-submenu index="3">
                     <template slot="title"><i class="el-icon-s-grid"></i>考勤签到</template>
-                    <router-link to="attendance">
+                    <router-link tag="div" to="attendance">
                         <el-menu-item index="3-1">开始考勤</el-menu-item>
                     </router-link>
                 </el-submenu>
