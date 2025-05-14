@@ -4,7 +4,7 @@ import axios from 'axios';
 // 创建 axios 实例
 const service = axios.create({
   // 设置基础 URL 为后端的 IP 和端口
-  baseURL: 'http://10.243.140.27:8000',
+  baseURL: 'http://localhost:8000',
   timeout: 5000 // 请求超时时间
 });
 
