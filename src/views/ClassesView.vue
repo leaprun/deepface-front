@@ -42,7 +42,7 @@
                 <el-button type="primary" icon="el-icon-plus" @click="addCourse">新增空课程</el-button>
                 <el-col :span="6">
                         <el-upload class="upload-demo"
-                            action="http://10.243.140.27:8000/student/addBatch"
+                            action="http://localhost:8000/student/addBatch"
                             :on-success="handleSuccess" :on-error="handleError" :on-preview="handlePreview"  :headers="uploadHeaders"
                             :on-remove="handleRemove" :before-remove="beforeRemove" :limit="1" :on-exceed="handleExceed"
                             :file-list="fileList" accept=".pdf">
