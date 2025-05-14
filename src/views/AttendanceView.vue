@@ -184,7 +184,7 @@ export default {
                 }
             }).then((result) => {
                 if (result.data.code == 1) {
-                    this.checkData = result.data.data.check_in;
+                    this.checkData = result.data.data;
                 } else {
                     alert(result.data.msg)
                 }
